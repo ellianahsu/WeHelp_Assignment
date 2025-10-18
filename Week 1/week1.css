@@ -248,15 +248,22 @@ nav .my-website {
     }
     
     .welcome-section{
+        display:grid;
         place-items:center;
         text-align:center;
     }
+
+    .welcome-section h2 {
+        margin: 0;  
+        padding: 0 10px;  
+    }
+
 
     .header {
         padding: 5px 10px;
         justify-content: space-between;
     }
-
+    
     /* Control promotion image size */
     .promotion-image {
         width: 60px;   /* Reduce size for mobile */
@@ -330,3 +337,4 @@ nav .my-website {
 
 
 }
+
