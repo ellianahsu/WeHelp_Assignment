@@ -95,7 +95,7 @@ nav .my-website {
 
 }
 
-.promotion-image { /
+.promotion-image { 
     width: 80px;
     height: 50px;
     object-fit: cover; /*keep img proportion*/
@@ -327,5 +327,6 @@ nav .my-website {
         padding: 15px;
         cursor: pointer;
     }
+
 
 }
