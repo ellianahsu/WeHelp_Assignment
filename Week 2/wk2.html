@@ -1,0 +1,204 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta charset="utf-8"/>
+        <title>Wk2 JS</title>
+    </head>
+    <body>
+        <script>
+            // Task 1
+            const characters = [
+            { name: "悟空", x: 0, y: 0, side: "left" },
+            { name: "辛巴", x: -3, y: 3, side: "left" },
+            { name: "貝吉塔", x: -4, y: -1, side: "left" },
+            { name: "特南克斯", x: 1, y: -2, side: "left" },
+            { name: "丁滿", x: -1, y: 4, side: "right" },
+            { name: "弗利沙", x: 4, y: -1, side: "right" },
+            ];
+
+            function func1(name) {
+            // 找到對應角色
+            const c = characters.find(char => char.name === name);
+
+            // 建立距離清單 [(name, distance)]
+            const distances = characters
+                .filter(o => o.name !== name)
+                .map(o => {
+                const baseDistance = Math.abs(c.x - o.x) + Math.abs(c.y - o.y);
+                const sidePenalty = (c.side !== o.side) ? 2 : 0;
+                return [o.name, baseDistance + sidePenalty];
+                });
+
+            // min & max dist
+            const minDist = Math.min(...distances.map(d => d[1]));
+            const maxDist = Math.max(...distances.map(d => d[1]));
+
+            // 找出所有同樣距離的角色名稱
+            const nearest = distances
+                .filter(([n, d]) => d === minDist)
+                .map(([n]) => n)
+                .join("、");
+
+            const farthest = distances
+                .filter(([n, d]) => d === maxDist)
+                .map(([n]) => n)
+                .join("、");
+
+            console.log(`print 最遠${farthest}；最近${nearest}`);
+            }
+
+            // output
+            console.log("=====Task 1=====");
+            func1("辛巴");      // 最遠弗利沙；最近丁滿、貝吉塔
+            func1("悟空");      // 最遠丁滿、弗利沙；最近特南克斯
+            func1("弗利沙");    // 最遠辛巴；最近特南克斯
+            func1("特南克斯");  // 最遠丁滿；最近悟空
+
+
+             // Task 2
+            const services = [
+            {name: "S1", r: 4.5, c: 1000},
+            {name: "S2", r: 3, c: 1200},
+            {name: "S3", r: 3.8, c: 800}
+            ];
+
+            const bookings = {
+            "S1": [],
+            "S2": [],
+            "S3": []
+            };
+
+            function func2(ss, start, end, criteria) {
+            let availableServices = [];
+
+            // For Loop 每個服務
+            for (let service of ss) {
+                // Check time availability
+                let timeIsFree = true; // 假設時段是可預約的
+                for (let booking of bookings[service.name]) {
+                    if (start < booking.end && end > booking.start) {
+                        // 客戶時段跟現有預約重疊: 開始<結束 and 結束>開始
+                        timeIsFree = false;
+                        break;
+                    }
+                }
+                
+                if (!timeIsFree) {
+                    continue; // 跳過這個服務,檢查下一個
+                }
+                
+                // Check if meets criteria
+                let meetsRequirement = false;
+                // 預設不符合條件
+                
+                if (criteria.includes(">=")) {
+                    let parts = criteria.split(">="); // "c>=800" → ["c", "800"]
+                    let field = parts[0].trim(); // field = "c"
+                    let value = parseFloat(parts[1]); // value = 800.0
+                    if (field in service) { // 檢查服務是否有"c"欄位
+                        meetsRequirement = service[field] >= value; // c>=800
+                    }
+                    
+                } else if (criteria.includes("<=")) {
+                    let parts = criteria.split("<=");
+                    let field = parts[0].trim();
+                    let value = parseFloat(parts[1]);
+                    if (field in service) {
+                        meetsRequirement = service[field] <= value;
+                    }
+                    
+                } else if (criteria.includes("=")) { // "name=S1"
+                    let parts = criteria.split("=");
+                    let field = parts[0].trim();
+                    let value = parts[1].trim().replace(/"/g, '');
+                    if (field === "name") {
+                        meetsRequirement = service.name === value; // name == "S1"?
+                    } else if (field in service) {
+                        meetsRequirement = service[field] === parseFloat(value);
+                    }
+                }
+                
+                if (meetsRequirement) {
+                    availableServices.push(service);
+                    // if meet require, add
+                }
+            }
+
+            // If no services available
+            if (availableServices.length === 0) {
+                console.log("Sorry");
+                return;
+            }
+
+            // Pick the best one
+            let chosen = availableServices[0];
+
+            // 如果有多個選項
+            if (availableServices.length > 1) {
+                let field = null;
+                if (criteria.includes(">=")) {
+                    field = criteria.split(">=")[0].trim();
+                } else if (criteria.includes("<=")) {
+                    field = criteria.split("<=")[0].trim();
+                }
+                
+                if (field === "r" || field === "c") {
+                    if (criteria.includes(">=")) {
+                        // For >=, pick minimum
+                        for (let s of availableServices) {
+                            if (s[field] < chosen[field]) {
+                                chosen = s;
+                            }
+                        }
+                    } else if (criteria.includes("<=")) {
+                        // For <=, pick maximum
+                        for (let s of availableServices) {
+                            if (s[field] > chosen[field]) {
+                                chosen = s;
+                            }
+                        }
+                    }
+                }
+            }
+
+            console.log(chosen.name);
+            bookings[chosen.name].push({start: start, end: end});
+            }
+
+            console.log("=====Task 2=====");
+            func2(services, 15, 17, "c>=800");   // S3
+            func2(services, 11, 13, "r<=4");     // S3
+            func2(services, 10, 12, "name=S3");  // Sorry
+            func2(services, 15, 18, "r>=4.5");   // S1
+            func2(services, 16, 18, "r>=4");     // Sorry
+            func2(services, 13, 17, "name=S1");  // Sorry
+            func2(services, 8, 9, "c<=1500");    // S2
+
+
+        // Task 4
+         function func4(sp, stat, n) {
+            // (available space, status bitmap, passenger number)
+            let avail_car = -1; // 因0為可用車廂,不能使用0為place holder, -1為還沒找到車廂
+            let min_diff = Infinity; // Infinity = 無限大
+
+            for (let i = 0; i < sp.length; i++) {
+            if (stat[i] === '0') { // 判斷車廂是否能用, 只看可用的(0), 不能用(1)
+                let diff = Math.abs(sp[i] - n); // 車廂座位和需要的座位差多少
+                if (diff < min_diff) { // 這個車廂比之前找到的更好嗎？
+                min_diff = diff; // 更新最小差值
+                avail_car = i; // 記住幾號車廂
+                }
+            }
+            }
+
+            return avail_car; // 回傳最合適車廂編號
+            }
+
+            // Output
+            console.log("=====Task 4=====");
+            console.log(func4([3, 1, 5, 4, 3, 2], "101000", 2)); // 5
+            console.log(func4([1, 0, 5, 1, 3], "10100", 4));     // 4
+            console.log(func4([4, 6, 5, 8], "1000", 4));         // 2
+        </script>
+    </body>
+</html>
