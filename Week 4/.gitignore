@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 虛擬環境
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 作業系統
+.DS_Store
+Thumbs.db
+
+# 其他
+*.log
+.env
+```
+
+---
+
+### **確認檔案結構:**
+
+
+```
+Week 4/
+├── .gitignore          
+├── main.py
+├── static/
+│   ├── style.css
+│   └── script.js
+├── templates/
+│   ├── index.html
+│   ├── member.html
+│   ├── ohoh.html
+│   └── hotel.html
+├── venv/              ← 不上傳
+└── __pycache__/       ← 不上傳
+
+__pycache__/
+
+❌ 這是 Python 自動生成的快取檔案
+❌ 每個人的電腦都會自動生成
+❌ 上傳會讓 repository 變得很亂
+
+venv/
+
+❌ 虛擬環境是每個人自己建立的
+❌ 檔案很大(幾百 MB)
+❌ 不同作業系統的 venv 不相容
+❌ 會讓 Git 變得很慢
+
+
+```
+fastapi==0.121.1
+uvicorn==0.38.0
+itsdangerous==2.2.0
+jinja2==3.1.6
+python-multipart==0.0.20
